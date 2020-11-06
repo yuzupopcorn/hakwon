@@ -1,0 +1,37 @@
+use grp;
+
+create table grp_board(
+bid int not null auto_increment primary key,
+board_grp varchar(5),
+board_code varchar(20) not null,
+board_color varchar(20),
+board_maker varchar(20),
+board_title varchar(255) not null,
+board_type char(1),
+board_read char(1),
+board_write char(1),
+board_reply char(1),
+board_download char(1),
+board_regdate date
+);
+
+
+create table boardCode
+(aid int not null auto_increment primary key,
+boardType char(1),
+subject varchar(255) not null,
+writer varchar(20) not null,
+content text,
+regdate datetime,
+hit int default 0,
+fileName varchar(300),
+fileUrl varchar(300),
+ref int,
+re_step int,
+re_level int);
+
+(cid int not null auto_increment primary key,
+aid int not null,
+comment text,
+who varchar(20),
+regdate datetime);

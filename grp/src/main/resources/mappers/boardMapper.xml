@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+
+	<sql id="search">
+		<choose>
+	
+			<when test="words == ''">				
+			</when> 
+			<when test="searchOpt == 'all'">
+				AND (buseo_name LIKE CONCAT('%', #{words},'%') OR
+				board_code LIKE CONCAT('%', #{words},'%') OR
+				board_title LIKE CONCAT('%', #{words},'%'))
+			</when> 
+			
+			<otherwise>
+				AND ${searchOpt} LIKE CONCAT('%', #{words},'%')
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="getBoardOne" parameterType="String" resultType="com.greenart.grp.model.BoardVO">
+	SELECT
+		bid,
+		board_grp AS boardGrp,
+		BS.buseo_name AS empBuseoName,
+		board_code AS boardCode,
+		board_color AS boardColor,
+		board_maker AS boardMaker,
+		board_title AS boardTitle,
+		board_type AS boardType ,
+		board_read AS boardRead,
+		board_write AS boardWrite,
+		board_reply AS boardReply,
+		board_download AS boardDownload,
+		FROM grp_board BD, grp_buseo BS 
+		WHERE board_code = #{boardCode}
+		
+	</select>
+
+	<insert id="setBoard" parameterType="com.greenart.grp.model.BoardVO">
+	 INSERT INTO grp_board SET 
+		 board_grp = #{boardGrp},
+		 board_code = #{boardCode}, 
+		 board_color = #{boardColor},
+		 board_maker = #{boardMaker},
+		 board_title = #{boardTitle},
+		 board_type = #{boardType},
+		 board_read = #{boardRead},
+		 board_write = #{boardWrite},
+		 board_reply = #{boardReply},
+		 board_download = #{boardDownload},
+		 board_regdate = now()
+	</insert>
+	
+	<insert id="createArticleTbl">
+		${str}
+	</insert>
+	
+	<insert id="createCommentTbl">
+		${str}
+	</insert>
+	
+	<select id="getBoardChk" parameterType="String" resultType="int" >
+		SELECT COUNT(bid) FROM grp_board WHERE board_code = #{boardCode}
+	</select>
+	
+	<select id="getBoardList" resultType="com.greenart.grp.model.BoardVO">
+		SELECT
+		bid,
+		board_grp AS boardGrp,
+		B.buseo_name AS buseo_name,
+		board_code AS boardCode,
+		board_color AS boardColor,
+		board_maker AS boardMaker,
+		board_title AS boardTitle,
+		board_type AS boardType,
+		board_read AS boardRead,
+		board_write AS boardWrite,
+		board_reply AS boardReply,
+		board_download AS boardDownload,
+		board_regdate AS boardRegdate 
+		FROM grp_board A, grp_buseo B 
+		WHERE A.board_grp = B.buseo_id 
+		<include refid="search"></include> ORDER BY bid DESC LIMIT #{start}, #{end}
+	</select>
+	
+	<select id="getBoardCount" resultType="int">
+		SELECT COUNT(bid) FROM grp_board
+	</select>
+	
+	<delete id="setBoardDelete" parameterType="String">
+		DELETE FROM grp_board WHERE board_code = #{boardCode}
+	</delete>
+	
+	<insert id="dropArticleTbl">
+		${str}
+	</insert>
+	
+	<insert id="dropCommentTbl">
+		${str}
+	</insert>
+
+	<update id="updateBoardList" parameterType="String">
+		UPDATE board_grp SET
+			board_color = #{boardColor},
+			board_maker = #{boardMaker},
+			board_title = #{boardTitle},
+			board_type = #{boardType},
+			board_read = #{boardRead},
+			board_write = #{boardWrite},
+			board_reply = #{boardReply},
+			board_download = #{boardDownload}
+	</update>
+	
+</mapper>
